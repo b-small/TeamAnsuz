@@ -2,18 +2,22 @@
   //vars
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
-  var player = {};
+  var player = { x : 64, y : 260, width : 60, height : 96 };
   var ground = [];
   var platformWidth = 32;
   var platformHeight = canvas.height - platformWidth * 4;
+  var spaceHeld = false;
+  var body = document.body;
+  var html = document.documentElement;
+  var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
 
   // resize the canvas to fill browser wind
   window.addEventListener('resize', resizeCanvas, false);
-
   function resizeCanvas() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
+    canvas.height = height;
+    platformHeight = canvas.height - platformWidth;
+    player.y = platformHeight - player.height + 4;
 
     //load images
     var assetLoader = (function() {
@@ -181,7 +185,7 @@
       }
 
       player.anim.update();
-      player.anim.draw(64, 260);
+      player.anim.draw(player.x, player.y);
     }
 
 
@@ -220,5 +224,6 @@
 
     assetLoader.downloadAll();
   }
+
   resizeCanvas();
 })();
