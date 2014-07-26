@@ -1,229 +1,349 @@
 (function() {
-  //vars
-  var canvas = document.getElementById('canvas');
-  var ctx = canvas.getContext('2d');
-  var player = { x : 64, y : 260, width : 60, height : 96 };
-  var ground = [];
-  var platformWidth = 32;
-  var platformHeight = canvas.height - platformWidth * 4;
-  var spaceHeld = false;
-  var body = document.body;
-  var html = document.documentElement;
-  var height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+//vars
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var player = {
+	x: 64,
+	y: 260,
+	width: 60,
+	height: 96
+};
+var ground = [];
+var enemies = [];
+var platformWidth = 32;
 
-  // resize the canvas to fill browser wind
-  window.addEventListener('resize', resizeCanvas, false);
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = height;
-    platformHeight = canvas.height - platformWidth;
-    player.y = platformHeight - player.height + 4;
+var platformHeight = canvas.height - platformWidth * 4;
+var spaceHeld = false;
+var body = document.body;
+var html = document.documentElement;
+var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+var lives = 5;
 
-    //load images
-    var assetLoader = (function() {
-      // images 
-      this.imgs = {
-        'bg': 'imgs/sky.png',
-        'sky': 'imgs/sky.png',
-        'grass': 'imgs/grass.png',
-        'avatar_normal': 'imgs/normal_walk.png'
-      };
+// resize the canvas to fill browser wind
+window.addEventListener('resize', resizeCanvas, false);
 
-      var assetsLoaded = 0;
-      var numImgs = Object.keys(this.imgs).length;
-      this.totalAssest = numImgs;
+function resizeCanvas() {
+	canvas.width = window.innerWidth;
+	canvas.height = height;
+	platformHeight = canvas.height - platformWidth;
+	player.y = platformHeight - player.height + 4;
 
+	//load images
+	var assetLoader = (function() {
+		// images 
+		this.imgs = {
+			'bg': 'imgs/sky.png',
+			'sky': 'imgs/sky.png',
+			'grass': 'imgs/grass.png',
+			'avatar_normal': 'imgs/normal_walk.png',
+			'enemy': 'imgs/scary.gif'
+		};
 
-      function assetLoaded(dic, name) {
-
-        if (this[dic][name].status !== 'loading') {
-          return;
-        }
-
-        this[dic][name].status = 'loaded';
-        assetsLoaded++;
-
-        // finished callback
-        if (assetsLoaded === this.totalAssest && typeof this.finished === 'function') {
-          this.finished();
-        }
-      }
+		var assetsLoaded = 0;
+		var numImgs = Object.keys(this.imgs).length;
+		this.totalAssest = numImgs;
 
 
-      this.downloadAll = function() {
-        var _this = this;
-        var src;
+		function assetLoaded(dic, name) {
 
-        // load images
-        for (var img in this.imgs) {
-          if (this.imgs.hasOwnProperty(img)) {
-            src = this.imgs[img];
+			if (this[dic][name].status !== 'loading') {
+				return;
+			}
 
-            // closure for event binding
-            (function(_this, img) {
-              _this.imgs[img] = new Image();
-              _this.imgs[img].status = 'loading';
-              _this.imgs[img].name = img;
-              _this.imgs[img].onload = function() {
-                assetLoaded.call(_this, 'imgs', img)
-              };
-              _this.imgs[img].src = src;
-            })(_this, img);
-          }
-        }
-      }
+			this[dic][name].status = 'loaded';
+			assetsLoaded++;
 
-      return {
-        imgs: this.imgs,
-        totalAssest: this.totalAssest,
-        downloadAll: this.downloadAll
-      };
-    })();
-
-    assetLoader.finished = function() {
-      start();
-    }
+			// finished callback
+			if (assetsLoaded === this.totalAssest && typeof this.finished === 'function') {
+				this.finished();
+			}
+		}
 
 
-    function SpriteSheet(path, frameWidth, frameHeight) {
-      this.image = new Image();
-      this.frameWidth = frameWidth;
-      this.frameHeight = frameHeight;
+		this.downloadAll = function() {
+			var _this = this;
+			var src;
 
-      // calculate number of frames in a row after the image loads
-      var self = this;
-      this.image.onload = function() {
-        self.framesPerRow = Math.floor(self.image.width / self.frameWidth);
-      };
+			// load images
+			for (var img in this.imgs) {
+				if (this.imgs.hasOwnProperty(img)) {
+					src = this.imgs[img];
 
-      this.image.src = path;
-    }
+					// closure for event binding
+					(function(_this, img) {
+						_this.imgs[img] = new Image();
+						_this.imgs[img].status = 'loading';
+						_this.imgs[img].name = img;
+						_this.imgs[img].onload = function() {
+							assetLoaded.call(_this, 'imgs', img)
+						};
+						_this.imgs[img].src = src;
+					})(_this, img);
+				}
+			}
+		}
 
-    //spritesheet animation
-    function Animation(spritesheet, frameSpeed, startFrame, endFrame) {
+		return {
+			imgs: this.imgs,
+			totalAssest: this.totalAssest,
+			downloadAll: this.downloadAll
+		};
+	})();
 
-      var animationSequence = [];
-      var currentFrame = 0;
-      var counter = 0;
+	assetLoader.finished = function() {
+		start();
+		checkForCollision();
 
-
-      for (var frameNumber = startFrame; frameNumber <= endFrame; frameNumber++)
-        animationSequence.push(frameNumber);
-
-      //update animation
-      this.update = function() {
-
-        // update to the next frame 
-        if (counter == (frameSpeed - 1)) {
-          currentFrame = (currentFrame + 1) % animationSequence.length;
-        }
-
-        // update the counter
-        counter = (counter + 1) % frameSpeed;
-      };
-
-
-      this.draw = function(x, y) {
-        // row and col of the frame
-        var row = Math.floor(animationSequence[currentFrame] / spritesheet.framesPerRow);
-        var col = Math.floor(animationSequence[currentFrame] % spritesheet.framesPerRow);
-
-        ctx.drawImage(
-          spritesheet.image,
-          col * spritesheet.frameWidth, row * spritesheet.frameHeight,
-          spritesheet.frameWidth, spritesheet.frameHeight,
-          x, y,
-          spritesheet.frameWidth, spritesheet.frameHeight);
-      };
-    }
-
-    //create background
-    var background = (function() {
-      var sky = {};
-
-      this.draw = function() {
-        ctx.drawImage(assetLoader.imgs.bg, 0, 0);
+	}
 
 
-        sky.x -= sky.speed;
-        // draw images side by side to loop
-        ctx.drawImage(assetLoader.imgs.sky, sky.x, sky.y);
-        ctx.drawImage(assetLoader.imgs.sky, sky.x + canvas.width, sky.y);
+	function SpriteSheet(path, frameWidth, frameHeight) {
+		this.image = new Image();
+		this.frameWidth = frameWidth;
+		this.frameHeight = frameHeight;
 
-      };
+		// calculate number of frames in a row after the image loads
+		var self = this;
+		this.image.onload = function() {
+			self.framesPerRow = Math.floor(self.image.width / self.frameWidth);
+		};
 
-      //reset background
-      this.reset = function() {
-        sky.x = 0;
-        sky.y = 0;
-        sky.speed = 0.2;
-      }
+		this.image.src = path;
+	}
 
-      return {
-        draw: this.draw,
-        reset: this.reset
-      };
-    })();
+	//spritesheet animation
+	function Animation(spritesheet, frameSpeed, startFrame, endFrame) {
 
-    //game loop
-    function animate() {
-      requestAnimFrame(animate);
-
-      background.draw();
-
-      for (i = 0; i < ground.length; i++) {
-        ground[i].x -= player.speed;
-        ctx.drawImage(assetLoader.imgs.grass, ground[i].x, ground[i].y);
-      }
-
-      if (ground[0].x <= -platformWidth) {
-        ground.shift();
-        ground.push({
-          'x': ground[ground.length - 1].x + platformWidth,
-          'y': platformHeight
-        });
-      }
-
-      player.anim.update();
-      player.anim.draw(player.x, player.y);
-    }
+		var animationSequence = [];
+		var currentFrame = 0;
+		var counter = 0;
 
 
-    var requestAnimFrame = (function() {
-      return window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.msRequestAnimationFrame ||
-        function(callback, element) {
-          window.setTimeout(callback, 1000 / 60);
-        };
-    })();
+		for (var frameNumber = startFrame; frameNumber <= endFrame; frameNumber++)
+			animationSequence.push(frameNumber);
+
+		//update animation
+		this.update = function() {
+
+			// update to the next frame 
+			if (counter == (frameSpeed - 1)) {
+				currentFrame = (currentFrame + 1) % animationSequence.length;
+			}
+
+			// update the counter
+			counter = (counter + 1) % frameSpeed;
+		};
 
 
-    function start() {
-      // setup 
-      player.width = 60;
-      player.height = 96;
-      player.speed = 6;
-      player.sheet = new SpriteSheet('imgs/normal_walk.png', player.width, player.height);
-      player.anim = new Animation(player.sheet, 4, 0, 15);
+		this.draw = function(x, y) {
+			// row and col of the frame
+			var row = Math.floor(animationSequence[currentFrame] / spritesheet.framesPerRow);
+			var col = Math.floor(animationSequence[currentFrame] % spritesheet.framesPerRow);
 
-      // ground tiles
-      for (i = 0, length = Math.floor(canvas.width / platformWidth) + 2; i < length; i++) {
-        ground[i] = {
-          'x': i * platformWidth,
-          'y': platformHeight
-        };
-      }
+			ctx.drawImage(
+				spritesheet.image,
+				col * spritesheet.frameWidth, row * spritesheet.frameHeight,
+				spritesheet.frameWidth, spritesheet.frameHeight,
+				x, y,
+				spritesheet.frameWidth, spritesheet.frameHeight);
+		};
+	}
 
-      background.reset();
+	//create background
+	var background = (function() {
+		var sky = {};
 
-      animate();
-    }
+		this.draw = function() {
 
-    assetLoader.downloadAll();
-  }
+			ctx.drawImage(assetLoader.imgs.bg, 0, 0);
 
-  resizeCanvas();
+
+			sky.x -= sky.speed;
+			// draw images side by side to loop
+			ctx.drawImage(assetLoader.imgs.sky, sky.x, sky.y);
+			ctx.drawImage(assetLoader.imgs.sky, sky.x + canvas.width, sky.y);
+
+		};
+
+		//reset background
+		this.reset = function() {
+			sky.x = 0;
+			sky.y = 0;
+			sky.speed = 0.2;
+
+		}
+
+		return {
+			draw: this.draw,
+			reset: this.reset
+		};
+	})();
+
+
+
+	//create enemies
+	var enemiesF = (function() {
+		var enemy = {};
+		enemy.active = true;
+		enemy.width = 145;
+		enemy.height = 123;
+		enemies.pop();
+		enemies.push(enemy);
+
+
+		this.draw = function() {
+
+
+			enemy.x -= enemy.speed;
+			// draw images side by side to loop
+
+			ctx.drawImage(assetLoader.imgs.enemy, enemy.x, enemy.y);
+			ctx.drawImage(assetLoader.imgs.enemy, enemy.x + canvas.width, enemy.y);
+
+			ctx.font = "20pt Arial";
+			ctx.fillText("" + lives, 20, 40);
+
+
+		};
+
+		//reset background
+		this.reset = function() {
+
+			enemy.x = player.x + 1000;
+			enemy.y = player.y - 20;
+			enemy.speed = 3;
+			11
+
+		}
+
+		return {
+			draw: this.draw,
+			reset: this.reset
+		};
+	})();
+
+
+
+	//game loop
+	function animate() {
+		requestAnimFrame(animate);
+
+		background.draw();
+		enemiesF.draw();
+
+		for (i = 0; i < ground.length; i++) {
+			ground[i].x -= player.speed;
+			ctx.drawImage(assetLoader.imgs.grass, ground[i].x, ground[i].y);
+		}
+
+		if (ground[0].x <= -platformWidth) {
+			ground.shift();
+			ground.push({
+				'x': ground[ground.length - 1].x + platformWidth,
+				'y': platformHeight
+			});
+		}
+
+
+		checkForCollision();
+		player.anim.update();
+		player.anim.draw(player.x, player.y);
+
+	}
+
+
+	var requestAnimFrame = (function() {
+		return window.requestAnimationFrame ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame ||
+			window.oRequestAnimationFrame ||
+			window.msRequestAnimationFrame ||
+			function(callback, element) {
+				window.setTimeout(callback, 1000 / 60);
+			};
+	})();
+
+
+	function start() {
+		// setup 
+
+		player.width = 60;
+		player.height = 96;
+		player.speed = 6;
+		player.sheet = new SpriteSheet('imgs/normal_walk.png', player.width, player.height);
+		player.anim = new Animation(player.sheet, 4, 0, 15);
+
+		// ground tiles
+		for (i = 0, length = Math.floor(canvas.width / platformWidth) + 2; i < length; i++) {
+			ground[i] = {
+				'x': i * platformWidth,
+				'y': platformHeight
+			};
+		}
+
+
+		background.reset();
+		enemiesF.reset();
+		animate();
+
+
+	}
+
+	assetLoader.downloadAll();
+}
+
+
+function createEnemies() {
+	for (var i = 0; i < Things.length; i++) {
+		if (i % 2 == 0) {
+			enemiesF.reset();
+			enemiesF.draw();
+
+		}
+	};
+}
+
+function checkForCollision() {
+	enemies.forEach(function(enemy) {
+		if (collides(enemy, player)) {
+			lives--;
+			enemy.active = false;
+		}
+	});
+}
+
+function collides(a, b) {
+	if (a.active) {
+		var collision = (b.x + b.width >= a.x && b.x <= a.x + a.width) && (b.y + b.height >= a.y && b.y <= a.y + a.height);
+		return collision;
+	} else {
+		return false;
+	}
+}
+
+function jump(event) {
+	player.y -= 50;
+	var counter = 0;
+	var i = setInterval(function() {
+		player.y += 5;
+		counter++;
+		if (counter === 10) {
+			clearInterval(i);
+		}
+	}, 300);
+}
+
+canvas.addEventListener("click", jump, true);
+canvas.addEventListener("touch", jump, true);
+document.onkeydown = function() {
+	switch (window.event.keyCode) {
+		case 38:
+			jump();
+			break;
+		case 32:
+			jump();
+			break;
+	}
+};
+resizeCanvas();
 })();
