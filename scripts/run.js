@@ -24,9 +24,9 @@
 	// resize the canvas to fill browser wind
 	window.addEventListener('resize', resizeCanvas, false);
 
-	function resizeCanvas() {
-		canvas.width = window.innerWidth;
-		canvas.height = height;
+	function resizeCanvas() {  
+		canvas.width  = window.innerWidth;
+		canvas.height = window.innerHeight;		
 		platformHeight = canvas.height - platformWidth;
 		player.y = platformHeight - player.height + 4;
 
