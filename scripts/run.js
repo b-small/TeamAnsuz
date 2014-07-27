@@ -38,7 +38,10 @@
 				'sky': 'imgs/sky.png',
 				'grass': 'imgs/grass.png',
 				'avatar_normal': 'imgs/normal_walk.png',
-				'enemy': 'imgs/scary.gif'
+				'enemy': 'imgs/scary.gif',
+				'enemy1': 'imgs/soScary.gif',
+				'enemy2': 'imgs/veryScary.gif'
+
 			};
 
 			var assetsLoaded = 0;
@@ -189,6 +192,7 @@
 			enemy.height = 123;
 			enemies.pop();
 			enemies.push(enemy);
+			enemy.path = assetLoader.imgs.enemy;
 
 
 			this.draw = function() {
@@ -197,8 +201,8 @@
 				enemy.x -= enemy.speed;
 				// draw images side by side to loop
 
-				ctx.drawImage(assetLoader.imgs.enemy, enemy.x, enemy.y);
-				ctx.drawImage(assetLoader.imgs.enemy, enemy.x + canvas.width, enemy.y);
+				ctx.drawImage(enemy.path, enemy.x, enemy.y);
+				ctx.drawImage(enemy.path, enemy.x + canvas.width, enemy.y);
 
 				ctx.font = "20pt Arial";
 				ctx.fillText("" + lives, 20, 40);
@@ -212,9 +216,19 @@
 			this.update = function() {
 
 				enemy.x = player.x + 1000;
-				enemy.y = player.y - 20;
-				enemy.speed = 3;
+				enemy.speed = 5;
 				enemy.active = true;
+				var nr = Math.random();
+				if (nr < 0.3) {
+					enemy.path = assetLoader.imgs.enemy;
+					enemy.y = player.y - 20;
+				} else if (nr >= 0.3 && nr < 0.6) {
+					enemy.path = assetLoader.imgs.enemy1;
+					enemy.y = player.y - 45;
+				} else if (nr >= 0.6) {
+					enemy.path = assetLoader.imgs.enemy2;
+					enemy.y = player.y - 60;
+				}
 
 			}
 
