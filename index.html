@@ -1,15 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>Runepack Joyride</title>
   <link rel="stylesheet" href="styles/main.css" type="text/css" media="screen">
 </head>
-<body>
-  <div class="wrapper">
-    <canvas id="canvas" width="800" height="480">
-      <p>You're browser does not support the required functionality to play this game.</p>
-    </canvas>
+<body >
+    <div class="teamLogo"></div>
+  <div class="menu">
+      
+      <form action="/" method="post">
+          <button formaction="game.html">Start</button>
+          <button onclick="self.close()">Exit</button>
+      </form>
   </div>
   <script type="text/javascript" src="scripts/run.js"></script>
 </body>
