@@ -262,13 +262,13 @@
 		        // draw images side by side to loop
 		      
 		        ctx.drawImage(rune.path, rune.x, rune.y);
-		        //ctx.drawImage(rune.path, rune.x + canvas.width, rune.y);
+		        ctx.drawImage(rune.path, rune.x + canvas.width, rune.y);
 
 		        //ctx.font = "20pt Arial";
 		        //ctx.fillText("" + lives, 20, 40);
-		        //if (rune.x < 0) {
-		        //    update();
-		        //}
+		        if (rune.x < 0) {
+		            update();
+		        }
 
 		    };
 
@@ -278,22 +278,22 @@
 		    this.update = function () {
 
 		        rune.x = player.x + 800;
-		        rune.speed = 5;
+		        rune.speed = 6;
 		        rune.active = true;
-		        //if (rune.x === 0) {
-		            var nr = Math.random();
-		            if (nr < 0.3) {
-		                rune.path = assetLoader.imgs.rune;
-		                rune.y = 200 + Math.random() * 300;
-		            } else if (nr >= 0.3 && nr < 0.6) {
-		                rune.path = assetLoader.imgs.rune1;
-		                rune.y = 200 + Math.random() * 300;
-		            }
-		            else if (nr >= 0.6) {
-		                rune.path = assetLoader.imgs.rune2;
-		                rune.y = 200 + Math.random() * 300;
-		            }
-		       // }
+
+		        var nr = Math.random();
+		        if (nr < 0.3) {
+		            rune.path = assetLoader.imgs.rune;
+		            rune.y = 200 + Math.random() * 300;
+		        } else if (nr >= 0.3 && nr < 0.6) {
+		            rune.path = assetLoader.imgs.rune1;
+		            rune.y = 200 + Math.random() * 300;
+		        }
+		        else if (nr >= 0.6) {
+		            rune.path = assetLoader.imgs.rune2;
+		            rune.y = 200 + Math.random() * 300;
+		        }
+		       
 
 		    }
 
