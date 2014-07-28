@@ -21,13 +21,14 @@
 	var html = document.documentElement;
 	var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
 	var lives = 5;
+	var points = 0;
 
 	// resize the canvas to fill browser wind
 	window.addEventListener('resize', resizeCanvas, false);
 
-	function resizeCanvas() {  
-		canvas.width  = window.innerWidth;
-		canvas.height = window.innerHeight;		
+	function resizeCanvas() {
+		canvas.width = window.innerWidth;
+		canvas.height = height;
 		platformHeight = canvas.height - platformWidth;
 		player.y = platformHeight - player.height + 4;
 
@@ -42,14 +43,15 @@
 				'enemy': 'imgs/scary.gif',
 				'enemy1': 'imgs/soScary.gif',
 				'enemy2': 'imgs/veryScary.gif',
-                'rune': 'imgs/rune1.png',
-                'rune1': 'imgs/rune2.png',
-                'rune2': 'imgs/rune3.png'
+				'rune': 'imgs/rune1.png',
+				'rune1': 'imgs/rune2.png',
+				'rune2': 'imgs/rune3.png'
+
 			};
 
 			var assetsLoaded = 0;
 			var numImgs = Object.keys(this.imgs).length;
-			this.totalAssest = numImgs;
+			this.totalAssets = numImgs;
 
 
 			function assetLoaded(dic, name) {
@@ -62,7 +64,7 @@
 				assetsLoaded++;
 
 				// finished callback
-				if (assetsLoaded === this.totalAssest && typeof this.finished === 'function') {
+				if (assetsLoaded === this.totalAssets && typeof this.finished === 'function') {
 					this.finished();
 				}
 			}
@@ -93,7 +95,7 @@
 
 			return {
 				imgs: this.imgs,
-				totalAssest: this.totalAssest,
+				totalAssets: this.totalAssets,
 				downloadAll: this.downloadAll
 			};
 		})();
@@ -186,6 +188,59 @@
 		})();
 
 
+		//create runes
+		var runesF = (function() {
+			var rune = {};
+			rune.active = true;
+			rune.width = 30;
+			rune.height = 40;
+			runes.pop();
+			runes.push(rune);
+			rune.path = assetLoader.imgs.rune;
+
+			this.draw = function() {
+
+				rune.x -= rune.speed;
+				// draw images side by side to loop
+
+				ctx.drawImage(rune.path, rune.x, rune.y);
+				ctx.drawImage(rune.path, rune.x + canvas.width, rune.y);
+
+				ctx.font = "20pt Arial";
+				ctx.fillText("\n" + points + "pts", 50, 40);
+				if (rune.x < 0) {
+					updateRune();
+				}
+
+			}
+
+
+			this.updateRune = function() {
+
+				rune.x = 800;
+				rune.speed = 6;
+				rune.active = true;
+
+				var nr1 = Math.random();
+				if (nr1 < 0.3) {
+					rune.path = assetLoader.imgs.rune;
+					rune.y = 200 + Math.random() * 300;
+				} else if (nr1 >= 0.3 && nr1 < 0.6) {
+					rune.path = assetLoader.imgs.rune1;
+					rune.y = 200 + Math.random() * 300;
+				} else if (nr1 >= 0.6) {
+					rune.path = assetLoader.imgs.rune2;
+					rune.y = 200 + Math.random() * 300;
+				}
+			}
+
+			return {
+				draw: this.draw,
+				updateRune: this.updateRune
+			};
+		})();
+
+
 
 		//create enemies
 		var enemiesF = (function() {
@@ -209,19 +264,16 @@
 
 				ctx.font = "20pt Arial";
 				ctx.fillText("" + lives, 20, 40);
-				if (enemy.x < 0) {
+				if (enemy.x <= 0) {
 					update();
 				}
 
-			};
+			}
 
-
-
-			//reset background
 			this.update = function() {
 
 				enemy.x = player.x + 1000;
-				enemy.speed = 5;
+				enemy.speed = 6;
 				enemy.active = true;
 				var nr = Math.random();
 				if (nr < 0.3) {
@@ -235,6 +287,7 @@
 					enemy.y = player.y - 60;
 				}
 
+
 			}
 
 			return {
@@ -243,65 +296,6 @@
 			};
 		})();
 
-	    //Runes
-
-		var runesF = (function () {
-		    var rune = {};
-		    rune.active = true;
-		    rune.width = 20;
-		    rune.height = 30;
-		    runes.pop();
-		    runes.push(rune);
-		    rune.path = assetLoader.imgs.rune;
-
-
-		    this.draw = function () {
-
-
-		        rune.x -= rune.speed;
-		        // draw images side by side to loop
-		      
-		        ctx.drawImage(rune.path, rune.x, rune.y);
-		        ctx.drawImage(rune.path, rune.x + canvas.width, rune.y);
-
-		        //ctx.font = "20pt Arial";
-		        //ctx.fillText("" + lives, 20, 40);
-		        if (rune.x < 0) {
-		            update();
-		        }
-
-		    };
-
-
-
-		    //reset background
-		    this.update = function () {
-
-		        rune.x = player.x + 800;
-		        rune.speed = 6;
-		        rune.active = true;
-
-		        var nr = Math.random();
-		        if (nr < 0.3) {
-		            rune.path = assetLoader.imgs.rune;
-		            rune.y = 200 + Math.random() * 300;
-		        } else if (nr >= 0.3 && nr < 0.6) {
-		            rune.path = assetLoader.imgs.rune1;
-		            rune.y = 200 + Math.random() * 300;
-		        }
-		        else if (nr >= 0.6) {
-		            rune.path = assetLoader.imgs.rune2;
-		            rune.y = 200 + Math.random() * 300;
-		        }
-		       
-
-		    }
-
-		    return {
-		        draw: this.draw,
-		        update: this.update
-		    };
-		})();
 
 		//game loop
 		function animate() {
@@ -311,9 +305,10 @@
 
 			//ctx.clearRect(0, 0, canvas.width, canvas.height);
 			background.draw();
-			runesF.draw();
+
 			enemiesF.draw();
-			
+			runesF.draw();
+
 
 			for (i = 0; i < ground.length; i++) {
 				ground[i].x -= player.speed;
@@ -330,6 +325,7 @@
 
 
 			checkForCollision();
+			checkForPointsCollision();
 			player.anim.update();
 			player.anim.draw(player.x, player.y);
 
@@ -348,6 +344,11 @@
 				};
 		})();
 
+
+		function updateAll() {
+			enemiesF.update();
+			runesF.updateRune();
+		}
 
 		function start() {
 			// setup 
@@ -368,8 +369,10 @@
 
 
 			background.reset();
-			enemiesF.update();
-			runesF.update();
+			/*runesF.update();
+			enemiesF.update();*/
+			updateAll();
+
 
 			animate();
 
@@ -385,6 +388,15 @@
 			if (collides(enemy, player)) {
 				lives--;
 				enemy.active = false;
+			}
+		});
+	}
+
+	function checkForPointsCollision() {
+		runes.forEach(function(rune) {
+			if (collides(rune, player)) {
+				points += 10;
+				rune.active = false;
 			}
 		});
 	}
