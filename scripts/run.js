@@ -42,9 +42,9 @@
 				'enemy': 'imgs/scary.gif',
 				'enemy1': 'imgs/soScary.gif',
 				'enemy2': 'imgs/veryScary.gif',
-                //'rune': 'imgs/rune1.png',
-                //'rune1': 'imgs/rune2.png',
-                //'rune2': 'imgs/rune3.png'
+                'rune': 'imgs/rune1.png',
+                'rune1': 'imgs/rune2.png',
+                'rune2': 'imgs/rune3.png'
 			};
 
 			var assetsLoaded = 0;
@@ -245,61 +245,63 @@
 
 	    //Runes
 
-		//var runesF = (function () {
-		//    var rune = {};
-		//    rune.active = true;
-		//    rune.width = 20;
-		//    rune.height = 30;
-		//    rune.pop();
-		//    runes.push(rune);
-		//    rune.path = assetLoader.imgs.rune;
+		var runesF = (function () {
+		    var rune = {};
+		    rune.active = true;
+		    rune.width = 20;
+		    rune.height = 30;
+		    runes.pop();
+		    runes.push(rune);
+		    rune.path = assetLoader.imgs.rune;
 
 
-		//    this.draw = function () {
+		    this.draw = function () {
 
 
-		//        rune.x -= rune.speed;
-		//        // draw images side by side to loop
+		        rune.x -= rune.speed;
+		        // draw images side by side to loop
+		      
+		        ctx.drawImage(rune.path, rune.x, rune.y);
+		        //ctx.drawImage(rune.path, rune.x + canvas.width, rune.y);
 
-		//        ctx.drawImage(rune.path, rune.x, rune.y);
-		//        ctx.drawImage(rune.path, rune.x + canvas.width, rune.y);
+		        //ctx.font = "20pt Arial";
+		        //ctx.fillText("" + lives, 20, 40);
+		        //if (rune.x < 0) {
+		        //    update();
+		        //}
 
-		//        ctx.font = "20pt Arial";
-		//        ctx.fillText("" + lives, 20, 40);
-		//        if (rune.x < 0) {
-		//            update();
-		//        }
-
-		//    };
+		    };
 
 
 
-		//    //reset background
-		//    this.update = function () {
+		    //reset background
+		    this.update = function () {
 
-		//        rune.x = player.x + 1000;
-		//        rune.speed = 5;
-		//        rune.active = true;
-		//        var nr = Math.random();
-		//        if (nr < 0.3) {
-		//            rune.path = assetLoader.imgs.rune;
-		//            rune.y = player.y - 20;
-		//        } else if (nr >= 0.3 && nr < 0.6) {
-		//            rune.path = assetLoader.imgs.rune1;
-		//            rune.y = player.y - 45;
-		//        }
-		//        else if (nr >= 0.6) {
-		//            rune.path = assetLoader.imgs.rune2;
-		//            rune.y = player.y - 60;
-		//        }
+		        rune.x = player.x + 800;
+		        rune.speed = 5;
+		        rune.active = true;
+		        //if (rune.x === 0) {
+		            var nr = Math.random();
+		            if (nr < 0.3) {
+		                rune.path = assetLoader.imgs.rune;
+		                rune.y = 200 + Math.random() * 300;
+		            } else if (nr >= 0.3 && nr < 0.6) {
+		                rune.path = assetLoader.imgs.rune1;
+		                rune.y = 200 + Math.random() * 300;
+		            }
+		            else if (nr >= 0.6) {
+		                rune.path = assetLoader.imgs.rune2;
+		                rune.y = 200 + Math.random() * 300;
+		            }
+		       // }
 
-		//    }
+		    }
 
-		//    return {
-		//        draw: this.draw,
-		//        update: this.update
-		//    };
-		//})();
+		    return {
+		        draw: this.draw,
+		        update: this.update
+		    };
+		})();
 
 		//game loop
 		function animate() {
@@ -309,7 +311,7 @@
 
 			//ctx.clearRect(0, 0, canvas.width, canvas.height);
 			background.draw();
-			//runesF.draw();
+			runesF.draw();
 			enemiesF.draw();
 			
 
@@ -367,7 +369,7 @@
 
 			background.reset();
 			enemiesF.update();
-			//runesF.update();
+			runesF.update();
 
 			animate();
 
