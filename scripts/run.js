@@ -190,34 +190,45 @@
 
 		//create runes
 		var runesF = (function() {
-			var rune = {};
-			rune.active = true;
-			rune.width = 30;
-			rune.height = 40;
-			runes.pop();
-			runes.push(rune);
-			rune.path = assetLoader.imgs.rune;
+			runes.splice(0, runes.length);
+			for (var i = 0; i < 4; i++) {
+
+				var rune = {};
+				rune.active = true;
+				rune.width = 30;
+				rune.height = 40;
+				//runes.pop();
+				runes.push(rune);
+				rune.path = assetLoader.imgs.rune;
+			}
 
 			this.draw = function() {
 
-				rune.x -= rune.speed;
-				// draw images side by side to loop
 
-				ctx.drawImage(rune.path, rune.x, rune.y);
-				ctx.drawImage(rune.path, rune.x + canvas.width, rune.y);
+				for (var i = 0; i < runes.length; i++) {
 
-				ctx.font = "20pt Arial";
-				ctx.fillText("\n" + points + "pts", 50, 40);
-				if (rune.x < 0) {
-					updateRune();
+
+					runes[i].x -= runes[i].speed;
+					// draw images side by side to loop
+
+					ctx.drawImage(runes[i].path, runes[i].x, runes[i].y);
+					ctx.drawImage(runes[i].path, runes[i].x + canvas.width, runes[i].y);
+
+
+					ctx.font = "20pt Arial";
+					ctx.fillText("\n" + points + "pts", 50, 40);
+					if (runes[i].x < 0) {
+						updateCurrent(runes[i]);
+					}
+
+
 				}
-
 			}
 
 
-			this.updateRune = function() {
+			function updateCurrent(rune) {
+				rune.x = Math.random() * 1000 + 500;
 
-				rune.x = 800;
 				rune.speed = 6;
 				rune.active = true;
 
@@ -234,9 +245,19 @@
 				}
 			}
 
+			this.updateRune = function() {
+
+				for (var i = 0; i < runes.length; i++) {
+
+					updateCurrent(runes[i]);
+
+				}
+			}
+
 			return {
 				draw: this.draw,
 				updateRune: this.updateRune
+
 			};
 		})();
 
@@ -307,6 +328,7 @@
 			background.draw();
 
 			enemiesF.draw();
+
 			runesF.draw();
 
 
@@ -345,10 +367,6 @@
 		})();
 
 
-		function updateAll() {
-			enemiesF.update();
-			runesF.updateRune();
-		}
 
 		function start() {
 			// setup 
@@ -369,13 +387,9 @@
 
 
 			background.reset();
-			/*runesF.update();
-			enemiesF.update();*/
-			updateAll();
-
-
+			enemiesF.update();
+			runesF.updateRune();
 			animate();
-
 
 		}
 
