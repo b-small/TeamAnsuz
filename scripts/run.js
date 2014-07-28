@@ -13,8 +13,6 @@
 	var runes = [];
 	var platformWidth = 32;
 
-	var stop;
-
 	var platformHeight = canvas.height - platformWidth * 4;
 	var spaceHeld = false;
 	var body = document.body;
@@ -206,7 +204,6 @@
 
 
 				for (var i = 0; i < runes.length; i++) {
-					if (runes[i].active) {
 
 						runes[i].x -= runes[i].speed;
 						// draw images side by side to loop
@@ -221,8 +218,6 @@
 							updateCurrent(runes[i]);
 						}
 
-
-					}
 				}
 			}
 
