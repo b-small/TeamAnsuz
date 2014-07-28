@@ -206,22 +206,23 @@
 
 
 				for (var i = 0; i < runes.length; i++) {
+					if (runes[i].active) {
+
+						runes[i].x -= runes[i].speed;
+						// draw images side by side to loop
+
+						ctx.drawImage(runes[i].path, runes[i].x, runes[i].y);
+						ctx.drawImage(runes[i].path, runes[i].x + canvas.width, runes[i].y);
 
 
-					runes[i].x -= runes[i].speed;
-					// draw images side by side to loop
+						ctx.font = "20pt Arial";
+						ctx.fillText("\n" + points + "pts", 50, 40);
+						if (runes[i].x < 0) {
+							updateCurrent(runes[i]);
+						}
 
-					ctx.drawImage(runes[i].path, runes[i].x, runes[i].y);
-					ctx.drawImage(runes[i].path, runes[i].x + canvas.width, runes[i].y);
 
-
-					ctx.font = "20pt Arial";
-					ctx.fillText("\n" + points + "pts", 50, 40);
-					if (runes[i].x < 0) {
-						updateCurrent(runes[i]);
 					}
-
-
 				}
 			}
 
@@ -411,6 +412,7 @@
 			if (collides(rune, player)) {
 				points += 10;
 				rune.active = false;
+
 			}
 		});
 	}
