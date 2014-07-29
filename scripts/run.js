@@ -215,8 +215,18 @@
 						ctx.drawImage(runes[i].path, runes[i].x + canvas.width, runes[i].y);
 					}
 
-					ctx.font = "20pt Arial";
-					ctx.fillText("\n" + points + "pts", 50, 40);
+					// ctx.font = "20pt Arial";
+					// ctx.fillText("\n" + points + "pts", 50, 40);
+
+					if( document.getElementById('score') == null ) {
+						var scoreDiv = document.createElement('div');
+						scoreDiv.id = "score";
+						document.body.appendChild(scoreDiv);
+						scoreDiv.innerHTML = points + 'pts';
+					} else {
+						document.getElementById('score').innerHTML = points + 'pts';
+					}
+
 					if (runes[i].x < 0) {
 						updateCurrent(runes[i]);
 
@@ -283,8 +293,23 @@
 					ctx.drawImage(enemies[i].path, enemies[i].x, enemies[i].y);
 					ctx.drawImage(enemies[i].path, enemies[i].x + canvas.width, enemies[i].y);
 
-					ctx.font = "20pt Arial";
-					ctx.fillText("" + lives, 20, 40);
+					// ctx.font = "20pt Arial";
+					// ctx.fillText("" + lives, 20, 40);
+
+
+					if( document.getElementById('lives') == null ) {
+						var livesDiv = document.createElement('div');
+						livesDiv.id = "lives";
+						document.body.appendChild(livesDiv);
+						livesDiv.innerHTML = lives;
+					} else {
+						document.getElementById('lives').innerHTML = lives;
+						// alert(document.getElementById('lives').innerHtml);
+					}
+
+					if ( lives <= 0 ) {
+						// location.href = 'gameover.html';
+					}
 					if (enemies[i].x <= 0) {
 						updateCurr(enemies[i]);
 					}

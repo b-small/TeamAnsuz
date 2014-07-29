@@ -1,3 +1,8 @@
+@font-face {
+  src: url('somefont.ttf');
+  font-family: 'FontaWe';
+}
+
 body {
   font-family: arial, sans-serif;
   font-size: 16px;
@@ -74,4 +79,50 @@ canvas {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+}
+
+div#lives {
+  width: 200px;
+  height: 32px;
+  font: 20px Verdana;
+  line-height: 32px;
+  color: #fff;
+  background: url(../imgs/lives.png) no-repeat 10px center;
+  z-index: 18;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 10px 10px 10px 50px;
+  margin: 0;
+  /* Disable crappy selection while using mouse ingame */
+  -moz-user-select: none; 
+  -khtml-user-select: none; 
+  -webkit-user-select: none; 
+  -o-user-select: none; 
+}
+
+div#score {
+  width: 200px;
+  height: 32px;
+  font: 20px Verdana;
+  line-height: 32px;
+  color: #fff;
+  background: url(../imgs/rune1.png) no-repeat right center;
+  z-index: 18;
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 10px 45px 10px 10px;
+  margin: 0 10px 0 0;
+  text-align: right;
+  /* Disable crappy selection while using mouse ingame */
+  -moz-user-select: none; 
+  -khtml-user-select: none; 
+  -webkit-user-select: none; 
+  -o-user-select: none; 
+}
+
+#gameover {
+  font-size: 40px 'FontaWe';
+  color: red;
 }
