@@ -308,7 +308,7 @@
 					}
 
 					if ( lives <= 0 ) {
-						// location.href = 'gameover.html';
+						location.href = 'gameover.html';
 					}
 					if (enemies[i].x <= 0) {
 						updateCurr(enemies[i]);
