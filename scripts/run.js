@@ -459,17 +459,17 @@
 	}
 
 	function jump(event) {
-		player.y -= 75;
+		player.y -= 200;
 		var counter = 0;
 			var asd=40;
 		var i = setInterval(function() {
-			player.y += 5;
+			player.y += 10;
 			counter++;
 			asd=asd + 20;
-			if (counter === 15) {
+			if (counter === 20) {
 				clearInterval(i);
 			}
-		}, 50+asd);
+		}, 10+asd);
 	}
 
 	canvas.addEventListener("click", jump, true);
