@@ -22,6 +22,8 @@
 	var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
 	var lives = 5;
 	var points = 0;
+	var hitSound = new Audio('sounds/punch.wav');
+	var runeSound = new Audio('sounds/coin.ogg');
 
 	// resize the canvas to fill browser wind
 	window.addEventListener('resize', resizeCanvas, false);
@@ -432,6 +434,7 @@
 			if (collides(enemy, player)) {
 				lives--;
 				enemy.active = false;
+				hitSound.play();
 			}
 		});
 	}
@@ -441,6 +444,7 @@
 			if (collides(rune, player)) {
 				points += 10;
 				rune.active = false;
+				runeSound.play();
 			}
 		});
 	}
