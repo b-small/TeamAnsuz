@@ -459,17 +459,18 @@
 	}
 
 	function jump(event) {
-		player.y -= 200;
+	if(player.y>0){
+		player.y -= 100;
 		var counter = 0;
-			var asd=40;
+			var asd=100;
 		var i = setInterval(function() {
 			player.y += 10;
 			counter++;
 			asd=asd + 20;
-			if (counter === 20) {
+			if (counter === 10) {
 				clearInterval(i);
 			}
-		}, 10+asd);
+		}, asd);}
 	}
 
 	canvas.addEventListener("click", jump, true);
