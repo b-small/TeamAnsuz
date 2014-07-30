@@ -320,7 +320,7 @@
 			}
 
 			function updateCurr(enemy) {
-				enemy.x = player.x + Math.random() * 1500;
+				enemy.x = canvas.width + Math.random() * 1500;
 				enemy.speed = 6;
 				enemy.active = true;
 				var nr = Math.random();
